@@ -2,11 +2,11 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: eco_postgres_PONOd
+      POSTGRES_DB: eco_postgres_PONOinput
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: "12345"
     ports:
-      - "5440:5432"   # внешний порт сменили на 5439, внутри контейнера всегда 5432
+      - "5441:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -20,9 +20,9 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8082:8082"
+      - "8083:8083"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/eco_postgres_PONOd
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/eco_postgres_PONOinput
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: "12345"
     depends_on:

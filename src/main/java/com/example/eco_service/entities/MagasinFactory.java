@@ -123,4 +123,37 @@ public class MagasinFactory {
 
     @Column()
     private int value;
+
+    @Column()
+    private Boolean new_base;// новые поля
+
+    @Column()
+    private String date_approve_tech;// новые поля
+
+    @Column()
+    private String date_input_update;// новые поля
+
+    @Column()
+    private String admissions_by_region;// новые поля
+
+    @Column()
+    private String services;// новые поля
+
+    @Column()
+    private String note_services;// новые поля
+
+    @Column()
+    private Boolean mobile_unit;// новые поля
+
+    @Column()
+    private Boolean excluded;// новые поля
+
+    @Column()
+    private LocalDate date_excluded;// новые поля
+
+    @Column()
+    private String note_excluded;// новые поля
+
+    @Column()
+    private Boolean burning;// новые поля
 }

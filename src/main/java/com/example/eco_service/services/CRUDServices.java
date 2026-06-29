@@ -487,6 +487,8 @@ public class CRUDServices {
                 .id_magazin_trash(magazinTrash)
                 .id_phys_trash(physStateTrash)
                 .id_magasin_factory(resolveTechnologyFactory(request.getId_magasin_factory()))
+                .get(request.getGet())
+                .spot(request.getSpot())
                 .build();
 
         return technologyRepository.save(entity);
@@ -530,6 +532,14 @@ public class CRUDServices {
         }
 
         entity.setId_magasin_factory(resolveTechnologyFactory(request.getId_magasin_factory()));
+
+        if (request.getGet() != null) {
+            entity.setGet(request.getGet());
+        }
+
+        if (request.getSpot() != null) {
+            entity.setSpot(request.getSpot());
+        }
 
         return technologyRepository.save(entity);
     }
@@ -591,6 +601,17 @@ public class CRUDServices {
                 .facticheskay_power(request.getFacticheskay_power())
                 .YNP(request.getYNP())
                 .value(request.getValue() != null ? request.getValue() : 0)
+                .new_base(request.getNew_base())
+                .date_approve_tech(request.getDate_approve_tech())
+                .date_input_update(request.getDate_input_update())
+                .admissions_by_region(request.getAdmissions_by_region())
+                .services(request.getServices())
+                .note_services(request.getNote_services())
+                .mobile_unit(request.getMobile_unit())
+                .excluded(request.getExcluded())
+                .date_excluded(request.getDate_excluded())
+                .note_excluded(request.getNote_excluded())
+                .burning(request.getBurning())
                 .build();
 
         return magasinFactoryRepository.save(entity);
@@ -713,6 +734,50 @@ public class CRUDServices {
             entity.setValue(request.getValue());
         }
 
+        if (request.getNew_base() != null) {
+            entity.setNew_base(request.getNew_base());
+        }
+
+        if (request.getDate_approve_tech() != null) {
+            entity.setDate_approve_tech(request.getDate_approve_tech());
+        }
+
+        if (request.getDate_input_update() != null) {
+            entity.setDate_input_update(request.getDate_input_update());
+        }
+
+        if (request.getAdmissions_by_region() != null) {
+            entity.setAdmissions_by_region(request.getAdmissions_by_region());
+        }
+
+        if (request.getServices() != null) {
+            entity.setServices(request.getServices());
+        }
+
+        if (request.getNote_services() != null) {
+            entity.setNote_services(request.getNote_services());
+        }
+
+        if (request.getMobile_unit() != null) {
+            entity.setMobile_unit(request.getMobile_unit());
+        }
+
+        if (request.getExcluded() != null) {
+            entity.setExcluded(request.getExcluded());
+        }
+
+        if (request.getDate_excluded() != null) {
+            entity.setDate_excluded(request.getDate_excluded());
+        }
+
+        if (request.getNote_excluded() != null) {
+            entity.setNote_excluded(request.getNote_excluded());
+        }
+
+        if (request.getBurning() != null) {
+            entity.setBurning(request.getBurning());
+        }
+
         return magasinFactoryRepository.save(entity);
     }
 
@@ -792,6 +857,8 @@ public class CRUDServices {
                 .id_class_danger(classDanger)
                 .id_magazin_trash(magazinTrash)
                 .value_trash(request.getValue_trash())
+                .get(request.getGet())
+                .spot(request.getSpot())
                 .build();
 
         MyTrash saved = myTrashRepository.save(entity);
@@ -841,6 +908,14 @@ public class CRUDServices {
 
         if (request.getValue_trash() != null) {
             entity.setValue_trash(request.getValue_trash());
+        }
+
+        if (request.getGet() != null) {
+            entity.setGet(request.getGet());
+        }
+
+        if (request.getSpot() != null) {
+            entity.setSpot(request.getSpot());
         }
 
         MyTrash saved = myTrashRepository.save(entity);

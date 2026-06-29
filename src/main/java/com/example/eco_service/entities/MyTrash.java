@@ -35,4 +35,10 @@ public class MyTrash {
     @Column(nullable = false,  length = 50)
     private float value_trash;
 
+    @Column()
+    private Boolean get;// новые поля
+
+    @Column()
+    private String spot;// новые поля
+
 }

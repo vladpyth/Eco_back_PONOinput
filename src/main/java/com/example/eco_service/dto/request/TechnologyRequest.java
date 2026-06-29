@@ -26,4 +26,10 @@ public class TechnologyRequest {
 
     @Schema(description = "ID предприятия", example = "7")
     private Long id_magasin_factory;
+
+    @Schema(description = "Признак получения", example = "true")
+    private Boolean get;
+
+    @Schema(description = "Место", example = "Склад №1")
+    private String spot;
 }

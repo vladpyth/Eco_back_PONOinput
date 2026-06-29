@@ -29,4 +29,10 @@ public class MyTrashRequest {
     @NotNull(message = "Количество отхода обязательно")
     @DecimalMin(value = "0.0", inclusive = false, message = "Количество должно быть больше 0")
     private Float value_trash;
+
+    @Schema(description = "Признак получения", example = "true")
+    private Boolean get;
+
+    @Schema(description = "Место", example = "Цех переработки")
+    private String spot;
 }

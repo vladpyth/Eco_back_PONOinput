@@ -96,4 +96,38 @@ public class MagasinFactoryRequest {
 
     @Schema(description = "Значение", example = "100")
     private Integer value;
+
+    @Schema(description = "Новая база", example = "true")
+    private Boolean new_base;
+
+    @Schema(description = "Дата утверждения технологии", example = "2024-06-15")
+    private String date_approve_tech;
+
+    @Schema(description = "Дата внесения/обновления", example = "2024-07-01")
+    private String date_input_update;
+
+    @Schema(description = "Допуски по регионам", example = "Минская область")
+    private String admissions_by_region;
+
+    @Schema(description = "Услуги", example = "Обезвреживание, утилизация")
+    private String services;
+
+    @Schema(description = "Примечание к услугам", example = "Круглосуточно")
+    private String note_services;
+
+    @Schema(description = "Мобильная установка", example = "false")
+    private Boolean mobile_unit;
+
+    @Schema(description = "Исключён из реестра", example = "false")
+    private Boolean excluded;
+
+    @Schema(description = "Дата исключения", example = "2025-01-10")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate date_excluded;
+
+    @Schema(description = "Примечание к исключению", example = "По заявлению владельца")
+    private String note_excluded;
+
+    @Schema(description = "Сжигание отходов", example = "false")
+    private Boolean burning;
 }

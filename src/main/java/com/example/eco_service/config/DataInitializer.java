@@ -235,31 +235,43 @@ public class DataInitializer implements CommandLineRunner {
                         .id_class_danger(classDangers.get(0))
                         .id_magazin_trash(magazinTrashes.get(0))
                         .id_phys_trash(physStateTrashes.get(0))
+                        .get(true)
+                        .spot("Цех №1")
                         .build(),
                 Technology.builder()
                         .id_class_danger(classDangers.get(1))
                         .id_magazin_trash(magazinTrashes.get(1))
                         .id_phys_trash(physStateTrashes.get(0))
+                        .get(false)
+                        .spot("Участок обезвреживания")
                         .build(),
                 Technology.builder()
                         .id_class_danger(classDangers.get(2))
                         .id_magazin_trash(magazinTrashes.get(2))
                         .id_phys_trash(physStateTrashes.get(0))
+                        .get(true)
+                        .spot("Линия сортировки")
                         .build(),
                 Technology.builder()
                         .id_class_danger(classDangers.get(3))
                         .id_magazin_trash(magazinTrashes.get(3))
                         .id_phys_trash(physStateTrashes.get(1))
+                        .get(false)
+                        .spot("Котельный цех")
                         .build(),
                 Technology.builder()
                         .id_class_danger(classDangers.get(4))
                         .id_magazin_trash(magazinTrashes.get(4))
                         .id_phys_trash(physStateTrashes.get(0))
+                        .get(true)
+                        .spot("Полигон, сектор А")
                         .build(),
                 Technology.builder()
                         .id_class_danger(classDangers.get(1))
                         .id_magazin_trash(magazinTrashes.get(5))
                         .id_phys_trash(physStateTrashes.get(0))
+                        .get(false)
+                        .spot("Прессовочный участок")
                         .build()
         );
         technologies = technologyRepository.saveAll(technologies);
@@ -293,6 +305,15 @@ public class DataInitializer implements CommandLineRunner {
                         .facticheskay_power("480000")
                         .YNP("123456789")
                         .value(100)
+                        .new_base(true)
+                        .date_approve_tech("2010-03-20")
+                        .date_input_update("2024-01-15")
+                        .admissions_by_region("Минская область")
+                        .services("Обезвреживание, утилизация")
+                        .note_services("Круглосуточный режим")
+                        .mobile_unit(false)
+                        .excluded(false)
+                        .burning(false)
                         .build(),
 
                 // Предприятие 2: Брестский завод по переработке пластика
@@ -320,6 +341,15 @@ public class DataInitializer implements CommandLineRunner {
                         .facticheskay_power("115000")
                         .YNP("987654321")
                         .value(50)
+                        .new_base(true)
+                        .date_approve_tech("2015-06-10")
+                        .date_input_update("2024-03-20")
+                        .admissions_by_region("Брестская область")
+                        .services("Переработка пластика")
+                        .note_services("Приём от населения")
+                        .mobile_unit(true)
+                        .excluded(false)
+                        .burning(false)
                         .build(),
 
                 // Предприятие 3: Гродненская ТЭЦ
@@ -347,6 +377,14 @@ public class DataInitializer implements CommandLineRunner {
                         .facticheskay_power("1950000")
                         .YNP("555444333")
                         .value(200)
+                        .new_base(false)
+                        .date_approve_tech("2005-01-15")
+                        .date_input_update("2023-11-01")
+                        .admissions_by_region("Гродненская область")
+                        .services("Энергетика")
+                        .mobile_unit(false)
+                        .excluded(false)
+                        .burning(true)
                         .build(),
 
                 // Предприятие 4: Гомельский маслоэкстракционный завод
@@ -374,6 +412,14 @@ public class DataInitializer implements CommandLineRunner {
                         .facticheskay_power("285000")
                         .YNP("111222333")
                         .value(75)
+                        .new_base(false)
+                        .date_approve_tech("2018-08-30")
+                        .date_input_update("2024-05-10")
+                        .admissions_by_region("Гомельская область")
+                        .services("Пищевая переработка")
+                        .mobile_unit(false)
+                        .excluded(false)
+                        .burning(false)
                         .build(),
 
                 // Предприятие 5: Витебский полигон ТБО
@@ -401,6 +447,16 @@ public class DataInitializer implements CommandLineRunner {
                         .facticheskay_power("380000")
                         .YNP("999888777")
                         .value(150)
+                        .new_base(false)
+                        .date_approve_tech("2000-03-01")
+                        .date_input_update("2022-09-01")
+                        .admissions_by_region("Витебская область")
+                        .services("Размещение ТБО")
+                        .mobile_unit(false)
+                        .excluded(true)
+                        .date_excluded(LocalDate.of(2023, 12, 31))
+                        .note_excluded("Закрытие полигона")
+                        .burning(false)
                         .build(),
 
                 // Предприятие 6: Могилёвский завод ЖБИ
@@ -428,6 +484,15 @@ public class DataInitializer implements CommandLineRunner {
                         .facticheskay_power("75000")
                         .YNP("444555666")
                         .value(40)
+                        .new_base(true)
+                        .date_approve_tech("2012-05-05")
+                        .date_input_update("2024-08-01")
+                        .admissions_by_region("Могилёвская область")
+                        .services("Производство ЖБИ")
+                        .note_services("Пылеулавливание")
+                        .mobile_unit(false)
+                        .excluded(false)
+                        .burning(false)
                         .build()
         );
 
@@ -443,12 +508,16 @@ public class DataInitializer implements CommandLineRunner {
                         .id_magazin_trash(magazinTrashes.get(0))
 
                         .value_trash(12500.5f)
+                        .get(true)
+                        .spot("Склад шлака")
                         .build(),
                 MyTrash.builder()
                         .id_class_danger(classDangers.get(1))
                         .id_magazin_trash(magazinTrashes.get(1))
 
                         .value_trash(250.3f)
+                        .get(false)
+                        .spot("Отстойник")
                         .build(),
 
                 // Отходы для Брестского завода пластика
@@ -457,12 +526,16 @@ public class DataInitializer implements CommandLineRunner {
                         .id_magazin_trash(magazinTrashes.get(2))
 
                         .value_trash(8000.0f)
+                        .get(true)
+                        .spot("Бункер приёма")
                         .build(),
                 MyTrash.builder()
                         .id_class_danger(classDangers.get(1))
                         .id_magazin_trash(magazinTrashes.get(5))
 
                         .value_trash(1500.0f)
+                        .get(true)
+                        .spot("Линия грануляции")
                         .build(),
 
                 // Отходы для Гродненской ТЭЦ
@@ -471,12 +544,16 @@ public class DataInitializer implements CommandLineRunner {
                         .id_magazin_trash(magazinTrashes.get(3))
 
                         .value_trash(50000.0f)
+                        .get(false)
+                        .spot("Золоотвал")
                         .build(),
                 MyTrash.builder()
                         .id_class_danger(classDangers.get(4))
                         .id_magazin_trash(magazinTrashes.get(4))
 
                         .value_trash(35000.0f)
+                        .get(false)
+                        .spot("Фильтры")
                         .build(),
 
                 // Отходы для Гомельского МЭЗ
@@ -484,6 +561,8 @@ public class DataInitializer implements CommandLineRunner {
                         .id_class_danger(classDangers.get(3))
                         .id_magazin_trash(magazinTrashes.get(3))
                         .value_trash(500.0f)
+                        .get(true)
+                        .spot("Жироуловитель")
                         .build(),
 
                 // Отходы для Витебского полигона
@@ -492,12 +571,16 @@ public class DataInitializer implements CommandLineRunner {
                         .id_magazin_trash(magazinTrashes.get(4))
 
                         .value_trash(280000.0f)
+                        .get(true)
+                        .spot("Сектор Б")
                         .build(),
                 MyTrash.builder()
                         .id_class_danger(classDangers.get(2))
                         .id_magazin_trash(magazinTrashes.get(2))
 
                         .value_trash(45000.0f)
+                        .get(false)
+                        .spot("Сектор В")
                         .build(),
 
                 // Отходы для Могилёвского завода ЖБИ
@@ -506,12 +589,16 @@ public class DataInitializer implements CommandLineRunner {
                         .id_magazin_trash(magazinTrashes.get(4))
 
                         .value_trash(12000.0f)
+                        .get(true)
+                        .spot("Цех ЖБИ")
                         .build(),
                 MyTrash.builder()
                         .id_class_danger(classDangers.get(0))
                         .id_magazin_trash(magazinTrashes.get(7))
 
                         .value_trash(3000.0f)
+                        .get(false)
+                        .spot("Дробильный участок")
                         .build()
         );
 

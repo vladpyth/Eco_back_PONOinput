@@ -45,4 +45,9 @@ public class Technology {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_technology;
 
+    @Column()
+    private Boolean get;// новые поля
+
+    @Column()
+    private String spot;// новые поля
 }
