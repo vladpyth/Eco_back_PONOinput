@@ -77,9 +77,14 @@ public class PdfReportGenerator {
 
             yPosition = drawHeader(contentStream, page, font, yPosition);
 
-            for (int wasteIndex = 0; wasteIndex < data.size(); wasteIndex++) {
-                WasteTypeReportDto wasteType = data.get(wasteIndex);
-                if (wasteIndex > 0) {
+            int drawnWasteTypes = 0;
+            for (WasteTypeReportDto wasteType : data) {
+                // Нет предприятий по этому отходу — блок не показываем
+                if (wasteType.getFactories() == null || wasteType.getFactories().isEmpty()) {
+                    continue;
+                }
+
+                if (drawnWasteTypes > 0) {
                     yPosition -= WASTE_BLOCK_GAP;
                 }
                 if (yPosition < 150) {
@@ -93,50 +98,44 @@ public class PdfReportGenerator {
                 }
 
                 yPosition = drawWasteTypeHeader(contentStream, font, wasteType, yPosition);
+                yPosition = drawTableHeaders(contentStream, font, colStarts, colWidth, yPosition);
+                float tableTopY = yPosition + ROW_HEIGHT;
+                List<Float> horizontalSeparators = new ArrayList<>();
+                horizontalSeparators.add(yPosition);
 
-                if (wasteType.getFactories() == null || wasteType.getFactories().isEmpty()) {
-                    yPosition -= HEADER_GAP;
-                    writeText(contentStream, font, 10, MARGIN + 20, yPosition,
-                            "Нет организаций, работающих с данным типом отходов");
-                    yPosition -= HEADER_GAP * 2;
-                } else {
-                    yPosition = drawTableHeaders(contentStream, font, colStarts, colWidth, yPosition);
-                    float tableTopY = yPosition + ROW_HEIGHT;
-                    List<Float> horizontalSeparators = new ArrayList<>();
-                    horizontalSeparators.add(yPosition);
-
-                    for (WasteTypeReportDto.FactoryForWasteReportDto factory : wasteType.getFactories()) {
-                        if (yPosition < 100) {
-                            drawInnerGrid(contentStream, colStarts, colWidth, tableTopY, yPosition, horizontalSeparators);
-                            contentStream.close();
-                            page = new PDPage(LANDSCAPE_A4);
-                            document.addPage(page);
-                            contentStream = new PDPageContentStream(document, page);
-                            yPosition = pageTop(page);
-                            colStarts = columnStarts(page);
-                            colWidth = columnWidth(page);
-                            yPosition = drawWasteTypeHeader(contentStream, font, wasteType, yPosition);
-                            yPosition = drawTableHeaders(contentStream, font, colStarts, colWidth, yPosition);
-                            tableTopY = yPosition + ROW_HEIGHT;
-                            horizontalSeparators = new ArrayList<>();
-                            horizontalSeparators.add(yPosition);
-                        }
-
-                        int lineCount = drawFactoryRow(contentStream, font, colStarts, colWidth, yPosition, factory);
-                        yPosition -= ROW_HEIGHT * lineCount;
+                for (WasteTypeReportDto.FactoryForWasteReportDto factory : wasteType.getFactories()) {
+                    if (yPosition < 100) {
+                        drawInnerGrid(contentStream, colStarts, colWidth, tableTopY, yPosition, horizontalSeparators);
+                        contentStream.close();
+                        page = new PDPage(LANDSCAPE_A4);
+                        document.addPage(page);
+                        contentStream = new PDPageContentStream(document, page);
+                        yPosition = pageTop(page);
+                        colStarts = columnStarts(page);
+                        colWidth = columnWidth(page);
+                        yPosition = drawWasteTypeHeader(contentStream, font, wasteType, yPosition);
+                        yPosition = drawTableHeaders(contentStream, font, colStarts, colWidth, yPosition);
+                        tableTopY = yPosition + ROW_HEIGHT;
+                        horizontalSeparators = new ArrayList<>();
                         horizontalSeparators.add(yPosition);
                     }
 
-                    drawInnerGrid(contentStream, colStarts, colWidth, tableTopY, yPosition, horizontalSeparators);
-                    yPosition -= SECTION_GAP;
+                    int lineCount = drawFactoryRow(contentStream, font, colStarts, colWidth, yPosition, factory);
+                    yPosition -= ROW_HEIGHT * lineCount;
+                    horizontalSeparators.add(yPosition);
                 }
+
+                drawInnerGrid(contentStream, colStarts, colWidth, tableTopY, yPosition, horizontalSeparators);
+                yPosition -= SECTION_GAP;
+                drawnWasteTypes++;
             }
 
             contentStream.close();
             addPageNumbers(document, font);
             document.save(baos);
 
-            log.info("PDF generated successfully with {} waste types", data.size());
+            log.info("PDF generated successfully with {} waste types (of {} in request)",
+                    drawnWasteTypes, data.size());
         } catch (Exception e) {
             log.error("Error generating PDF report", e);
             throw new IOException("Failed to generate PDF report: " + e.getMessage(), e);
@@ -206,16 +205,22 @@ public class PdfReportGenerator {
     private float drawWasteTypeHeader(PDPageContentStream contentStream, PDType0Font font,
                                       WasteTypeReportDto wasteType, float yPosition) throws IOException {
         String codeText = "Код отхода: " + wasteType.getCodeTrash();
-        String nameText = "Наименование: " + wasteType.getNameTrash();
+        String nameText = "Наименование: " + getValue(wasteType.getNameTrash());
+
+        // Наименования из Excel часто содержат \n — нельзя в showText без переноса
+        int codeLines;
+        int nameLines;
+        float nameX = MARGIN + 200;
+        float nameMaxWidth = Math.max(80f, LANDSCAPE_A4.getWidth() - nameX - MARGIN);
 
         if (useStandardFonts || font == null) {
-            writeTextStandard(contentStream, 11, MARGIN, yPosition, codeText);
-            writeTextStandard(contentStream, 11, MARGIN + 200, yPosition, nameText);
+            codeLines = drawWrappedTextStandard(contentStream, MARGIN, yPosition, 180f, codeText);
+            nameLines = drawWrappedTextStandard(contentStream, nameX, yPosition, nameMaxWidth, nameText);
         } else {
-            writeText(contentStream, font, 11, MARGIN, yPosition, codeText);
-            writeText(contentStream, font, 11, MARGIN + 200, yPosition, nameText);
+            codeLines = drawWrappedText(contentStream, font, 11, MARGIN, yPosition, 180f, codeText);
+            nameLines = drawWrappedText(contentStream, font, 11, nameX, yPosition, nameMaxWidth, nameText);
         }
-        return yPosition - HEADER_GAP - 8;
+        return yPosition - (ROW_HEIGHT * Math.max(codeLines, nameLines)) - 8;
     }
 
     private float drawTableHeaders(PDPageContentStream contentStream, PDType0Font font,
@@ -244,8 +249,8 @@ public class PdfReportGenerator {
     private int drawFactoryRow(PDPageContentStream contentStream, PDType0Font font,
                                float[] colStarts, float colWidth, float yPosition,
                                WasteTypeReportDto.FactoryForWasteReportDto factory) throws IOException {
-        String checkboxYes = "✓";
-        String checkboxNo = "✗";
+        String checkboxYes = "да";
+        String checkboxNo = "нет";
 
         int l1, l2, l3, l4, l5, l6, l7, l8;
 
@@ -281,12 +286,77 @@ public class PdfReportGenerator {
 
     // ==================== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ (стандартные шрифты) ====================
 
+    private static boolean isPrivateUseCodePoint(int cp) {
+        return (cp >= 0xE000 && cp <= 0xF8FF)
+                || (cp >= 0xF0000 && cp <= 0xFFFFD)
+                || (cp >= 0x100000 && cp <= 0x10FFFD);
+    }
+
+    private static boolean canEncode(org.apache.pdfbox.pdmodel.font.PDFont font, String s) {
+        if (font == null || s == null || s.isEmpty()) {
+            return true;
+        }
+        try {
+            font.encode(s);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Убирает control/PUA и символы без глифа в шрифте (иначе PDFBox: No glyph for U+…).
+     * {@code keepNewlines} — оставить \\n для последующего wrap.
+     */
+    private String sanitizeForFont(org.apache.pdfbox.pdmodel.font.PDFont font, String text, boolean keepNewlines) {
+        if (text == null || text.isEmpty()) {
+            return keepNewlines ? "" : "—";
+        }
+        StringBuilder sb = new StringBuilder(text.length());
+        for (int i = 0; i < text.length(); ) {
+            int cp = text.codePointAt(i);
+            int n = Character.charCount(cp);
+            if (cp == '\n' || cp == '\r') {
+                if (keepNewlines) {
+                    sb.append('\n');
+                } else {
+                    sb.append(' ');
+                }
+                i += n;
+                continue;
+            }
+            if (cp == '\t') {
+                sb.append(' ');
+                i += n;
+                continue;
+            }
+            if (Character.isISOControl(cp) || isPrivateUseCodePoint(cp)) {
+                i += n;
+                continue;
+            }
+            String chunk = new String(Character.toChars(cp));
+            if (!canEncode(font, chunk)) {
+                i += n;
+                continue;
+            }
+            sb.append(chunk);
+            i += n;
+        }
+        String out = sb.toString();
+        if (!keepNewlines) {
+            out = out.trim();
+            return out.isEmpty() ? "—" : out;
+        }
+        return out;
+    }
+
     private void writeTextStandard(PDPageContentStream contentStream, int size,
                                    float x, float y, String text) throws IOException {
         contentStream.beginText();
         contentStream.setFont(HELVETICA, size);
         contentStream.newLineAtOffset(x, y);
-        contentStream.showText(text);
+        // Helvetica: только ASCII-безопасная очистка (кириллица и так не в fallback-пути данных)
+        contentStream.showText(sanitizeForFont(HELVETICA, text, false));
         contentStream.endText();
     }
 
@@ -303,7 +373,9 @@ public class PdfReportGenerator {
 
     private List<String> wrapLinesStandard(String text, float maxWidth) throws IOException {
         List<String> out = new ArrayList<>();
-        String normalized = text == null ? "—" : text.replace("\r", "");
+        String normalized = sanitizeForFont(HELVETICA, text, true)
+                .replace("\r\n", "\n")
+                .replace('\r', '\n');
         String[] forcedLines = normalized.split("\n", -1);
 
         for (String forced : forcedLines) {
@@ -352,15 +424,16 @@ public class PdfReportGenerator {
         contentStream.beginText();
         contentStream.setFont(font, size);
         contentStream.newLineAtOffset(x, y);
-        contentStream.showText(text);
+        contentStream.showText(sanitizeForFont(font, text, false));
         contentStream.endText();
     }
 
     private void writeCenteredText(PDPageContentStream contentStream, PDPage page,
                                    PDType0Font font, int size, float y, String text) throws IOException {
-        float textWidth = font.getStringWidth(text) / 1000 * size;
+        String safe = sanitizeForFont(font, text, false);
+        float textWidth = font.getStringWidth(safe) / 1000 * size;
         float x = (page.getMediaBox().getWidth() - textWidth) / 2f;
-        writeText(contentStream, font, size, x, y, text);
+        writeText(contentStream, font, size, x, y, safe);
     }
 
     private float pageTop(PDPage page) {
@@ -395,7 +468,9 @@ public class PdfReportGenerator {
 
     private List<String> wrapLines(PDType0Font font, int size, String text, float maxWidth) throws IOException {
         List<String> out = new ArrayList<>();
-        String normalized = text == null ? "—" : text.replace("\r", "");
+        String normalized = sanitizeForFont(font, text, true)
+                .replace("\r\n", "\n")
+                .replace('\r', '\n');
         String[] forcedLines = normalized.split("\n", -1);
 
         for (String forced : forcedLines) {
