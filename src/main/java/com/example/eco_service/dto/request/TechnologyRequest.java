@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Запрос для сущности Technology")
 public class TechnologyRequest {
 
-    @Schema(description = "ID класса опасности", example = "2")
-    @NotNull(message = "ID класса опасности обязателен")
+    @Schema(description = "ID класса опасности (необязателен)", example = "2")
     private Long id_class_danger;
 
     @Schema(description = "ID отхода из справочника", example = "8")
@@ -30,6 +29,6 @@ public class TechnologyRequest {
     @Schema(description = "Признак получения", example = "true")
     private Boolean get;
 
-    @Schema(description = "Место", example = "Склад №1")
+    @Schema(description = "Место", example = "Цех переработки")
     private String spot;
 }
