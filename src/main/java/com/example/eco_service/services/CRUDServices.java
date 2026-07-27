@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1328,10 +1329,15 @@ public class CRUDServices {
 
     @Transactional(readOnly = true)
     public PageResponse<MagasinFactory> findAllMagasinFactoriesPaged(
-            Integer page, Integer size, String q, String sort, String dir) {
+            Integer page, Integer size, String q, String sort, String dir, Boolean includeExcluded) {
         Pageable pageable = PageSupport.pageable(page, size, "id_magasin_factory");
-        return PageResponse.from(magasinFactoryRepository.findAll(
-                PageSupport.textSearch(q, "id_magasin_factory", sort, dir, "id_registration", true), pageable));
+        Specification<MagasinFactory> spec =
+                PageSupport.textSearch(q, "id_magasin_factory", sort, dir, "id_registration", true);
+        if (!Boolean.TRUE.equals(includeExcluded)) {
+            spec = spec.and((root, query, cb) ->
+                    cb.or(cb.isNull(root.get("excluded")), cb.isFalse(root.get("excluded"))));
+        }
+        return PageResponse.from(magasinFactoryRepository.findAll(spec, pageable));
     }
 
     @Transactional(readOnly = true)

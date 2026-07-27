@@ -329,9 +329,10 @@ public class MainRouters {
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String dir) {
+            @RequestParam(required = false) String dir,
+            @RequestParam(required = false) Boolean includeExcluded) {
         if (PageSupport.wantsPage(page, size)) {
-            return ResponseEntity.ok(service.findAllMagasinFactoriesPaged(page, size, q, sort, dir));
+            return ResponseEntity.ok(service.findAllMagasinFactoriesPaged(page, size, q, sort, dir, includeExcluded));
         }
         return ResponseEntity.ok(service.findAllMagasinFactories());
     }
